@@ -1,4 +1,5 @@
 package org.example.model;
 
-public class Lapin {
+public final class Lapin implements Animal {
+
 }
