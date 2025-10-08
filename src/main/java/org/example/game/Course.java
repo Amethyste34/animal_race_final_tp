@@ -2,6 +2,7 @@ package org.example.game;
 
 import org.example.model.Animal;
 import org.example.thread.Coureur;
+import org.example.util.ClearConsole;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -42,11 +43,35 @@ public class Course {
     public void demarrer() {
         afficherIntroduction();
 
+        try {
+            Thread.sleep(2000); // Pause avant le départ
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
         // Départ simultané de tous les coureurs
         System.out.println("\n🚦 3... 2... 1... PARTEZ ! 🚦\n");
 
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
         for (Coureur coureur : coureurs) {
             coureur.start();
+        }
+
+        // Boucle d'affichage en temps réel
+        while (!courseTerminee.get()) {
+            try {
+                Thread.sleep(200); // Rafraîchissement toutes les 200ms
+                ClearConsole.clear();
+                afficherEtatCourse();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
         }
 
         // Attendre la fin de tous les threads
@@ -58,6 +83,7 @@ public class Course {
             }
         }
 
+        ClearConsole.clear();
         afficherClassement();
     }
 
@@ -113,6 +139,41 @@ public class Course {
                     coureur.getPosition(),
                     distanceTotale,
                     coureur.getTempsCourse());
+        }
+
+        System.out.println(STR."""
+            \{"═".repeat(60)}""");
+    }
+
+    /**
+     * Affiche l'état actuel de la course (appelé périodiquement)
+     */
+    private void afficherEtatCourse() {
+        System.out.println("═".repeat(60));
+        System.out.println("      🏁 COURSE EN DIRECT 🏁");
+        System.out.println(STR."""
+            \{"═".repeat(60)}""");
+
+        for (Coureur coureur : coureurs) {
+            Animal animal = coureur.getAnimal();
+            int pos = coureur.getPosition();
+
+            StringBuilder ligne = new StringBuilder();
+            ligne.append(String.format("%-8s : ", animal.getNom()));
+
+            // Afficher la piste
+            for (int i = 0; i < distanceTotale; i++) {
+                if (i == pos) {
+                    ligne.append(animal.getEmoji());
+                } else if (i == distanceTotale - 1) {
+                    ligne.append("🏁"); // Ligne d'arrivée
+                } else {
+                    ligne.append("-");
+                }
+            }
+
+            ligne.append(String.format(" [%d/%d]", pos, distanceTotale));
+            System.out.println(ligne);
         }
 
         System.out.println(STR."""

@@ -62,9 +62,6 @@ public class Coureur extends Thread {
                         distanceTotale
                 );
 
-                // Affichage de la progression
-                afficherProgression(nouvellePosition);
-
                 // Vérification de victoire (synchronisé)
                 if (nouvellePosition >= distanceTotale && !courseTerminee.get()) {
                     synchronized (courseTerminee) {
@@ -80,28 +77,6 @@ public class Coureur extends Thread {
                 break;
             }
         }
-    }
-
-    /**
-     * Méthodde d'affichage de la progression
-     *
-     * @param pos position
-     */
-    private void afficherProgression(int pos) {
-        StringBuilder ligne = new StringBuilder();
-        ligne.append(String.format("%-8s :", animal.getNom()));
-
-        // Afficher les tirets jusqu'à ma position
-        for (int i = 0; i < distanceTotale; i++) {
-            if (i == pos) {
-                ligne.append(animal.getEmoji());
-            } else {
-                ligne.append("-");
-            }
-        }
-
-        ligne.append(String.format(" [%d/%d]", pos, distanceTotale));
-        System.out.println(ligne);
     }
 
     /**
